@@ -19,7 +19,7 @@ type: custom:rekuperacja-card
 # show_shower: true
 # show_schedule: true
 ```
-Pokazuje bieżące ustawienie i powód, listę żądań (z odwołaniem), szybkie akcje Boost / Wietrz / Cicho, powrót do automatyki, podgląd wykrywania prysznica i harmonogram z wyborem wydajności dziennej.
+Harmonogram dzienny może działać w presecie **Auto** (centrala sama dobiera wydajność). Pokazuje bieżące ustawienie i powód, listę żądań (z odwołaniem), szybkie akcje Boost / Wietrz / Cicho, powrót do automatyki, podgląd wykrywania prysznica i harmonogram z wyborem wydajności dziennej.
 
 Plany: kuchnia, przed spaniem, nieobecność/urlop — patrz `rekuperacja/06-integracja-hacs-plan.md` w repo SmartHome.
 

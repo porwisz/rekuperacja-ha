@@ -8,6 +8,7 @@ from .entity import RekuperacjaEntity
 SWITCHES = {
     "automation": None,
     "schedule_enabled": EntityCategory.CONFIG,
+    "day_auto": EntityCategory.CONFIG,
     "shower_enabled": EntityCategory.CONFIG,
 }
 

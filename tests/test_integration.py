@@ -145,3 +145,18 @@ async def test_websocket(hass, hass_ws_client):
         msg = await ws.receive_json()
     assert msg["success"]
     assert hass.states.get("switch.rekuperacja_automation").state == "off"
+
+
+async def test_day_auto(hass, freezer):
+    calls, _ = await _setup(hass, freezer)
+    await hass.services.async_call("switch", "turn_on", {"entity_id": "switch.rekuperacja_day_in_auto_mode"}, blocking=True)
+    assert calls[-1].data["preset_mode"] == "Auto"
+
+
+async def test_auto_speed_change_is_not_manual(hass, freezer):
+    calls, _ = await _setup(hass, freezer)
+    await hass.services.async_call("switch", "turn_on", {"entity_id": "switch.rekuperacja_day_in_auto_mode"}, blocking=True)
+    freezer.tick(timedelta(seconds=30))
+    hass.states.async_set(FAN, "on", {"percentage": 60, "preset_mode": "Auto"})  # centrala sama zmienia bieg
+    await hass.async_block_till_done()
+    assert hass.states.get("sensor.rekuperacja_active_request").state == "harmonogram"

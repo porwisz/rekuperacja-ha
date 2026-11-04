@@ -14,6 +14,7 @@ DEFAULT_CWU = "sensor.cwu_temperatura_aktualna_dol"
 
 PRESET_SLEEP = "Sen"
 PRESET_BOOST = "Boost"
+PRESET_AUTO = "Auto"
 
 # Poziom porównawczy presetu Sen (najwyższa wydajność wygrywa).
 SLEEP_LEVEL = 20
@@ -31,6 +32,7 @@ DEFAULT_SETTINGS: dict = {
     "automation": True,
     "schedule_enabled": True,
     "day_percentage": 40,
+    "day_auto": False,  # dzień w presecie Auto: centrala sama dobiera wydajność
     "manual_minutes": 60,
     "boost_minutes": 30,
     "shower_enabled": True,

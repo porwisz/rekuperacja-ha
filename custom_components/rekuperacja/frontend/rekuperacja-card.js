@@ -6,12 +6,14 @@ const SOURCES = {
   reczne: { name: "Ręcznie", icon: "mdi:hand-back-right" },
   panel_wietrz: { name: "Wietrzenie", icon: "mdi:weather-windy" },
   panel_cicho: { name: "Cicho", icon: "mdi:volume-off" },
+  panel_auto: { name: "Auto", icon: "mdi:fan-auto" },
 };
 const src = (s) => SOURCES[s] || { name: s, icon: "mdi:account-arrow-right" };
 
 const QUICK = [
   { id: "boost", label: "Boost", sub: (st) => `100% · ${st.settings.boost_minutes} min`, icon: "mdi:fan-plus", action: { action: "boost" } },
   { id: "wietrz", label: "Wietrz", sub: () => "80% · 1 h", icon: "mdi:weather-windy", action: { action: "request", source: "panel_wietrz", percentage: 80, minutes: 60 } },
+  { id: "auto", label: "Auto", sub: () => "centrala · 2 h", icon: "mdi:fan-auto", action: { action: "request", source: "panel_auto", preset: "Auto", minutes: 120 } },
   { id: "cicho", label: "Cicho", sub: () => "Sen · 2 h", icon: "mdi:volume-off", action: { action: "request", source: "panel_cicho", preset: "Sen", minutes: 120 } },
 ];
 
@@ -122,12 +124,12 @@ class RekuperacjaCard extends HTMLElement {
       <div class="sec">
         <div class="sh">
           <ha-icon icon="${sc.is_day ? "mdi:weather-sunny" : "mdi:weather-night"}"></ha-icon><span>Harmonogram</span>
-          <span class="chip">${sc.is_day ? `dzień · ${st.settings.day_percentage}%` : "noc · Sen"}</span>
+          <span class="chip">${sc.is_day ? `dzień · ${st.settings.day_auto ? "Auto" : st.settings.day_percentage + "%"}` : "noc · Sen"}</span>
           ${this._toggle("schedule_enabled", st.settings.schedule_enabled)}
         </div>
         <div class="row2">
           <span>Wydajność w dzień</span>
-          <span class="steps">${[20, 40, 60, 80, 100].map((p) => `<button class="step ${p === st.settings.day_percentage ? "on" : ""}" data-day="${p}">${p}</button>`).join("")}</span>
+          <span class="steps"><button class="step ${st.settings.day_auto ? "on" : ""}" data-day="auto" title="Centrala sama dobiera wydajność">Auto</button>${[20, 40, 60, 80, 100].map((p) => `<button class="step ${!st.settings.day_auto && p === st.settings.day_percentage ? "on" : ""}" data-day="${p}">${p}</button>`).join("")}</span>
         </div>
         <div class="hint">${sc.is_day ? "Noc (Sen)" : "Dzień"} od ${hhmm(sc.next_switch)}.</div>
       </div>`;
@@ -164,8 +166,11 @@ class RekuperacjaCard extends HTMLElement {
     }));
     r.querySelectorAll("[data-cancel]").forEach((b) => b.addEventListener("click", () =>
       this._ws({ type: "rekuperacja/action", action: "cancel", source: b.dataset.cancel })));
-    r.querySelectorAll("[data-day]").forEach((b) => b.addEventListener("click", () =>
-      this._ws({ type: "rekuperacja/set_setting", key: "day_percentage", value: Number(b.dataset.day) })));
+    r.querySelectorAll("[data-day]").forEach((b) => b.addEventListener("click", async () => {
+      if (b.dataset.day === "auto") return this._ws({ type: "rekuperacja/set_setting", key: "day_auto", value: true });
+      await this._ws({ type: "rekuperacja/set_setting", key: "day_percentage", value: Number(b.dataset.day) });
+      this._ws({ type: "rekuperacja/set_setting", key: "day_auto", value: false });
+    }));
     const res = r.querySelector("[data-resume]");
     if (res) res.addEventListener("click", () => this._ws({ type: "rekuperacja/action", action: "resume" }));
   }
@@ -185,7 +190,7 @@ ha-card { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
 .big { font-size: 30px; font-weight: 600; line-height: 1.1; }
 .why { font-size: 13px; color: var(--secondary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .auto { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--secondary-text-color); }
-.quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; }
 button:disabled { opacity: .4; cursor: default; }
 .q { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px; border-radius: 12px;

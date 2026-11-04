@@ -15,7 +15,7 @@ from .core.arbiter import Command
 from .core.schedule import is_day, next_switch
 
 # ustawienia, które karta może zmieniać (bool / int)
-EDITABLE = {"automation", "schedule_enabled", "shower_enabled", "day_percentage",
+EDITABLE = {"automation", "schedule_enabled", "day_auto", "shower_enabled", "day_percentage",
             "boost_minutes", "manual_minutes", "shower_after_minutes"}
 
 

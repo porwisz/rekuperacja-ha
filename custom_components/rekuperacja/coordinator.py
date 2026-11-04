@@ -16,6 +16,7 @@ from homeassistant.util import dt as dt_util
 from .const import (
     COMMAND_GRACE_S,
     DEFAULT_SETTINGS,
+    PRESET_AUTO,
     PRESET_BOOST,
     PRESET_SLEEP,
     RESEND_INTERVAL_S,
@@ -156,7 +157,9 @@ class RekuperacjaCoordinator:
         out: list[Request] = []
         if self.settings["schedule_enabled"]:
             local = dt_util.as_local(now)
-            if is_day(local, self.settings):
+            if is_day(local, self.settings) and self.settings["day_auto"]:
+                out.append(Request(SOURCE_SCHEDULE, level_of(Command(preset=PRESET_AUTO)), Command(preset=PRESET_AUTO)))
+            elif is_day(local, self.settings):
                 pct = int(self.settings["day_percentage"])
                 out.append(Request(SOURCE_SCHEDULE, pct, Command(percentage=pct)))
             else:

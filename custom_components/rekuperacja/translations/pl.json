@@ -33,6 +33,9 @@
       },
       "shower_enabled": {
         "name": "Prysznic - auto boost"
+      },
+      "day_auto": {
+        "name": "Dzień w trybie Auto"
       }
     },
     "number": {

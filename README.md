@@ -11,6 +11,15 @@ Każdy moduł zgłasza żądanie wydajności; **wygrywa najwyższa**. Ręczna zm
 
 ## Etap 2 (0.2.0)
 - Prysznic: licznik wody ≥ 15 l **i** spadek CWU ≥ 2 °C w 3 min → 100%, wietrzenie 20 min po. Czujniki i progi w opcjach integracji.
+## Karta Lovelace (0.3.0)
+Integracja sama ładuje kartę — bez dodawania zasobu. W dashboardzie: Dodaj kartę → „Rekuperacja” albo YAML:
+```yaml
+type: custom:rekuperacja-card
+# title: Rekuperacja
+# show_shower: true
+# show_schedule: true
+```
+Pokazuje bieżące ustawienie i powód, listę żądań (z odwołaniem), szybkie akcje Boost / Wietrz / Cicho, powrót do automatyki, podgląd wykrywania prysznica i harmonogram z wyborem wydajności dziennej.
 
 Plany: kuchnia, przed spaniem, nieobecność/urlop — patrz `rekuperacja/06-integracja-hacs-plan.md` w repo SmartHome.
 

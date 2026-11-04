@@ -73,3 +73,12 @@ def test_tap_not_shower():
         d.add_water_liters(t, 1000 + i * 2)  # 12 l / 3 min
         d.add_cwu(t, 49.5 - i * 0.5)
     assert not d.detected(NOW + timedelta(minutes=3))
+
+
+def test_next_switch():
+    from custom_components.rekuperacja.core.schedule import next_switch
+
+    assert next_switch(NOW, DEFAULT_SETTINGS) == NOW.replace(hour=22, minute=30)
+    assert next_switch(NOW.replace(hour=23), DEFAULT_SETTINGS) == datetime(2026, 11, 5, 6, 0)
+    fri = datetime(2026, 11, 6, 23, 0)
+    assert next_switch(fri, DEFAULT_SETTINGS) == datetime(2026, 11, 7, 8, 0)

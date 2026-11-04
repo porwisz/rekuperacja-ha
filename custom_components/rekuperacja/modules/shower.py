@@ -74,6 +74,11 @@ class ShowerModule:
         if detected != self.detected:
             self.detected = detected
             _LOGGER.info("Prysznic %s", "wykryty" if detected else "zakończony")
+        from homeassistant.helpers.dispatcher import async_dispatcher_send
+
+        from ..const import SIGNAL_UPDATE
+
+        async_dispatcher_send(self.hass, SIGNAL_UPDATE)
         if detected and self.c.settings["shower_enabled"]:
             # odświeżane, póki trwa — wygasa N minut po ostatnim wykryciu
             await self.c.async_request(

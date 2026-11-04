@@ -13,7 +13,8 @@ DAY = dt_util.as_utc(dt_util.parse_datetime("2026-11-04T12:00:00+01:00"))
 
 async def _setup(hass: HomeAssistant, freezer):
     await hass.config.async_set_time_zone("Europe/Warsaw")
-    freezer.move_to(DAY)
+    if freezer is not None:
+        freezer.move_to(DAY)
     calls: list[ServiceCall] = []
 
     async def record(call: ServiceCall):
@@ -121,3 +122,26 @@ async def test_options_flow(hass):
     assert r["type"] == "create_entry"
     await hass.async_block_till_done()
     assert entry.runtime_data.shower.water == "sensor.a"
+
+
+async def test_websocket(hass, hass_ws_client):
+    calls, _ = await _setup(hass, None)  # bez freezera: token WS musi być ważny
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "rekuperacja/subscribe"})
+    assert (await ws.receive_json())["success"]
+    snap = (await ws.receive_json())["event"]
+    assert snap["winner"]["source"] == "harmonogram"
+    assert "next_switch" in snap["schedule"]
+    await ws.send_json({"id": 2, "type": "rekuperacja/action", "action": "request",
+                        "source": "panel_wietrz", "percentage": 80, "minutes": 60})
+    msg = await ws.receive_json()
+    while msg.get("id") != 2:
+        msg = await ws.receive_json()
+    assert msg["success"]
+    assert calls[-1].data["percentage"] == 80
+    await ws.send_json({"id": 3, "type": "rekuperacja/set_setting", "key": "automation", "value": False})
+    msg = await ws.receive_json()
+    while msg.get("id") != 3:
+        msg = await ws.receive_json()
+    assert msg["success"]
+    assert hass.states.get("switch.rekuperacja_automation").state == "off"

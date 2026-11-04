@@ -2,6 +2,7 @@
   "domain": "rekuperacja",
   "name": "Rekuperacja",
   "after_dependencies": ["esphome"],
+  "dependencies": ["frontend", "http", "websocket_api"],
   "codeowners": ["@porwisz"],
   "config_flow": true,
   "documentation": "https://github.com/porwisz/rekuperacja-ha",
@@ -10,5 +11,5 @@
   "issue_tracker": "https://github.com/porwisz/rekuperacja-ha/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

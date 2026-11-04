@@ -42,6 +42,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: RekuperacjaConfigEntry) 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     await coordinator.async_start()
 
+    from . import frontend, websocket
+
+    websocket.async_register(hass)
+    if hass.http is not None:
+        await frontend.async_register(hass)
+
     async def handle_request(call: ServiceCall) -> None:
         pct, preset = call.data.get("percentage"), call.data.get("preset")
         if (pct is None) == (preset is None):

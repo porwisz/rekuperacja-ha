@@ -14,3 +14,19 @@ def is_day(now: datetime, settings: dict) -> bool:
     if start <= end:
         return start <= t < end
     return t >= start or t < end  # dzień przechodzi przez północ
+
+
+def next_switch(now: datetime, settings: dict) -> datetime:
+    """Najbliższa zmiana dzień/noc po `now` (now — lokalny, świadomy strefy)."""
+    from datetime import timedelta
+
+    best = None
+    for d in range(0, 3):
+        day = (now + timedelta(days=d)).date()
+        prefix = "weekend" if day.weekday() >= 5 else "weekday"
+        for key in ("day_start", "night_start"):
+            t: time = settings[f"{prefix}_{key}"]
+            cand = datetime.combine(day, t, tzinfo=now.tzinfo)
+            if cand > now and (best is None or cand < best):
+                best = cand
+    return best

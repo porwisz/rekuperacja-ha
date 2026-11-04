@@ -4,6 +4,13 @@ from datetime import time
 
 DOMAIN = "rekuperacja"
 CONF_FAN = "fan_entity"
+CONF_WATER = "water_entity"
+CONF_CWU = "cwu_entity"
+CONF_MIN_LITERS = "shower_min_liters"
+CONF_MIN_DROP = "shower_min_drop"
+
+DEFAULT_WATER = "sensor.testowe_wodomierz_woda_stan_licznika"
+DEFAULT_CWU = "sensor.cwu_temperatura_aktualna_dol"
 
 PRESET_SLEEP = "Sen"
 PRESET_BOOST = "Boost"
@@ -18,6 +25,7 @@ RESEND_INTERVAL_S = 300
 SOURCE_MANUAL = "reczne"
 SOURCE_SCHEDULE = "harmonogram"
 SOURCE_BOOST_BUTTON = "przycisk_boost"
+SOURCE_SHOWER = "prysznic"
 
 DEFAULT_SETTINGS: dict = {
     "automation": True,
@@ -25,6 +33,8 @@ DEFAULT_SETTINGS: dict = {
     "day_percentage": 40,
     "manual_minutes": 60,
     "boost_minutes": 30,
+    "shower_enabled": True,
+    "shower_after_minutes": 20,
     "weekday_day_start": time(6, 0),
     "weekday_night_start": time(22, 30),
     "weekend_day_start": time(8, 0),

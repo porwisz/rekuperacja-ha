@@ -5,7 +5,11 @@ from homeassistant.const import EntityCategory
 
 from .entity import RekuperacjaEntity
 
-SWITCHES = {"automation": None, "schedule_enabled": EntityCategory.CONFIG}
+SWITCHES = {
+    "automation": None,
+    "schedule_enabled": EntityCategory.CONFIG,
+    "shower_enabled": EntityCategory.CONFIG,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):

@@ -9,7 +9,10 @@ Każdy moduł zgłasza żądanie wydajności; **wygrywa najwyższa**. Ręczna zm
 - Ręczne nadpisanie, przycisk Boost i „Powrót do automatyki”.
 - Usługi `rekuperacja.request` (source, percentage | preset, minutes) i `rekuperacja.cancel` — dla własnych automatyzacji.
 
-Plany: prysznic, kuchnia, przed spaniem, nieobecność/urlop — patrz `rekuperacja/06-integracja-hacs-plan.md` w repo SmartHome.
+## Etap 2 (0.2.0)
+- Prysznic: licznik wody ≥ 15 l **i** spadek CWU ≥ 2 °C w 3 min → 100%, wietrzenie 20 min po. Czujniki i progi w opcjach integracji.
+
+Plany: kuchnia, przed spaniem, nieobecność/urlop — patrz `rekuperacja/06-integracja-hacs-plan.md` w repo SmartHome.
 
 ## Instalacja
 HACS → Custom repositories → `porwisz/rekuperacja-ha` (Integration) → Rekuperacja → wybierz `fan.rekuperator`.

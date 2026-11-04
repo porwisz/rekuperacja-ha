@@ -69,3 +69,55 @@ async def test_automation_off(hass, freezer):
     n = len(calls)
     await hass.services.async_call(DOMAIN, "request", {"source": "x", "percentage": 100}, blocking=True)
     assert len(calls) == n
+
+
+async def test_shower_boost(hass, freezer):
+    await hass.config.async_set_time_zone("Europe/Warsaw")
+    freezer.move_to(DAY)
+    calls = []
+
+    async def record(call):
+        calls.append(call)
+        hass.states.async_set(FAN, "on", {"percentage": call.data.get("percentage"), "preset_mode": None})
+
+    hass.services.async_register("fan", "set_percentage", record)
+    hass.services.async_register("fan", "set_preset_mode", record)
+    hass.states.async_set(FAN, "on", {"percentage": 40, "preset_mode": None})
+    W, H = "sensor.woda", "sensor.cwu"
+    hass.states.async_set(W, "100.000", {"unit_of_measurement": "m³"})
+    hass.states.async_set(H, "49.5")
+    entry = MockConfigEntry(domain=DOMAIN, data={"fan_entity": FAN},
+                            options={"water_entity": W, "cwu_entity": H, "shower_min_liters": 15, "shower_min_drop": 2})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    for i in range(1, 7):
+        freezer.tick(timedelta(seconds=30))
+        hass.states.async_set(W, f"{100 + i * 0.004:.3f}", {"unit_of_measurement": "m³"})
+        hass.states.async_set(H, str(49.5 - i * 0.5))
+        await hass.async_block_till_done()
+    assert hass.states.get("binary_sensor.rekuperacja_shower").state == "on"
+    assert calls[-1].data["percentage"] == 100
+    freezer.tick(timedelta(minutes=10))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert hass.states.get("binary_sensor.rekuperacja_shower").state == "off"
+    assert calls[-1].data["percentage"] == 100  # nadal wietrzy (20 min po)
+    freezer.tick(timedelta(minutes=15))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert calls[-1].data["percentage"] == 40
+
+
+async def test_options_flow(hass):
+    entry = MockConfigEntry(domain=DOMAIN, data={"fan_entity": FAN}, options={})
+    entry.add_to_hass(hass)
+    hass.states.async_set(FAN, "on", {"percentage": 40, "preset_mode": None})
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    r = await hass.config_entries.options.async_init(entry.entry_id)
+    r = await hass.config_entries.options.async_configure(
+        r["flow_id"], {"water_entity": "sensor.a", "cwu_entity": "sensor.b", "shower_min_liters": 10, "shower_min_drop": 1}
+    )
+    assert r["type"] == "create_entry"
+    await hass.async_block_till_done()
+    assert entry.runtime_data.shower.water == "sensor.a"

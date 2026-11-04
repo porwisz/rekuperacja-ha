@@ -10,6 +10,7 @@ NUMBERS = {
     "day_percentage": (20, 100, 20, PERCENTAGE),  # firmware: 5 biegów co 20%
     "manual_minutes": (5, 480, 5, UnitOfTime.MINUTES),
     "boost_minutes": (5, 180, 5, UnitOfTime.MINUTES),
+    "shower_after_minutes": (0, 120, 5, UnitOfTime.MINUTES),
 }
 
 

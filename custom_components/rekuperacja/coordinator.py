@@ -7,6 +7,7 @@ from datetime import datetime, time, timedelta
 
 from homeassistant.const import ATTR_ENTITY_ID, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import Event, EventStateChangedData, HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_state_change_event, async_track_time_interval
 from homeassistant.helpers.storage import Store
@@ -23,6 +24,7 @@ from .const import (
     SOURCE_BOOST_BUTTON,
     SOURCE_MANUAL,
     SOURCE_SCHEDULE,
+    SOURCE_SHOWER,
     STORAGE_KEY,
     STORAGE_VERSION,
 )
@@ -58,7 +60,7 @@ def _req_from_json(d: dict) -> Request:
 
 
 class RekuperacjaCoordinator:
-    def __init__(self, hass: HomeAssistant, fan_entity: str) -> None:
+    def __init__(self, hass: HomeAssistant, fan_entity: str, options: dict | None = None) -> None:
         self.hass = hass
         self.fan_entity = fan_entity
         self.settings: dict = dict(DEFAULT_SETTINGS)
@@ -69,6 +71,9 @@ class RekuperacjaCoordinator:
         self._last_command: Command | None = None
         self._last_sent: datetime | None = None
         self._unsubs: list = []
+        from .modules.shower import ShowerModule
+
+        self.shower = ShowerModule(hass, self, options or {})
 
     # ---------- cykl życia ----------
     async def async_start(self) -> None:
@@ -94,6 +99,7 @@ class RekuperacjaCoordinator:
         self._unsubs.append(
             async_track_time_interval(self.hass, self._on_tick, timedelta(seconds=30))
         )
+        self._unsubs.extend(self.shower.start())
         await self.async_evaluate()
 
     async def async_stop(self) -> None:
@@ -115,6 +121,8 @@ class RekuperacjaCoordinator:
     # ---------- API dla encji i serwisów ----------
     async def async_set_setting(self, key: str, value) -> None:
         self.settings[key] = value
+        if key == "shower_enabled" and not value:
+            self.timed.pop(SOURCE_SHOWER, None)
         await self._async_save()
         await self.async_evaluate()
 
@@ -200,21 +208,28 @@ class RekuperacjaCoordinator:
         self._last_command = command
         self._last_sent = now
         _LOGGER.debug("Rekuperator -> %s (%s)", command.describe(), self.winner and self.winner.source)
-        if command.preset:
-            await self.hass.services.async_call(
-                "fan", "set_preset_mode",
-                {ATTR_ENTITY_ID: self.fan_entity, "preset_mode": command.preset}, blocking=True,
-            )
-        else:
-            await self.hass.services.async_call(
-                "fan", "set_percentage",
-                {ATTR_ENTITY_ID: self.fan_entity, "percentage": command.percentage}, blocking=True,
-            )
+        try:
+            if command.preset:
+                await self.hass.services.async_call(
+                    "fan", "set_preset_mode",
+                    {ATTR_ENTITY_ID: self.fan_entity, "preset_mode": command.preset}, blocking=True,
+                )
+            else:
+                await self.hass.services.async_call(
+                    "fan", "set_percentage",
+                    {ATTR_ENTITY_ID: self.fan_entity, "percentage": command.percentage}, blocking=True,
+                )
+        except HomeAssistantError as err:
+            _LOGGER.warning("Nie udało się ustawić rekuperatora: %s", err)
 
     # ---------- zdarzenia ----------
     @callback
     def _on_tick(self, _now) -> None:
-        self.hass.async_create_task(self.async_evaluate())
+        self.hass.async_create_task(self._async_tick())
+
+    async def _async_tick(self) -> None:
+        await self.shower.async_check()
+        await self.async_evaluate()
 
     @callback
     def _on_fan_change(self, event: Event[EventStateChangedData]) -> None:

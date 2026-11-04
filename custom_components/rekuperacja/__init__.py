@@ -14,7 +14,7 @@ from .const import CONF_FAN, DOMAIN
 from .coordinator import RekuperacjaCoordinator
 from .core.arbiter import Command
 
-PLATFORMS = [Platform.SWITCH, Platform.NUMBER, Platform.TIME, Platform.SENSOR, Platform.BUTTON]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SWITCH, Platform.NUMBER, Platform.TIME, Platform.SENSOR, Platform.BUTTON]
 
 type RekuperacjaConfigEntry = ConfigEntry[RekuperacjaCoordinator]
 
@@ -37,7 +37,7 @@ def _coordinator(hass: HomeAssistant) -> RekuperacjaCoordinator:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: RekuperacjaConfigEntry) -> bool:
-    coordinator = RekuperacjaCoordinator(hass, entry.data[CONF_FAN])
+    coordinator = RekuperacjaCoordinator(hass, entry.data[CONF_FAN], dict(entry.options))
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     await coordinator.async_start()
@@ -55,7 +55,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: RekuperacjaConfigEntry) 
 
     hass.services.async_register(DOMAIN, "request", handle_request, REQUEST_SCHEMA)
     hass.services.async_register(DOMAIN, "cancel", handle_cancel, CANCEL_SCHEMA)
+    entry.async_on_unload(entry.add_update_listener(_async_reload))
     return True
+
+
+async def _async_reload(hass: HomeAssistant, entry: RekuperacjaConfigEntry) -> None:
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: RekuperacjaConfigEntry) -> bool:

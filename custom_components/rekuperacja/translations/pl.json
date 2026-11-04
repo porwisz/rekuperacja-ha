@@ -7,6 +7,16 @@
         "data": {
           "fan_entity": "Wentylator"
         }
+      },
+      "modules": {
+        "title": "Prysznic",
+        "description": "Czujniki wykrywania prysznica (przepływ wody + spadek temp. CWU w 3 min). Puste = moduł wyłączony.",
+        "data": {
+          "water_entity": "Licznik wody",
+          "cwu_entity": "Temperatura CWU (dół zasobnika)",
+          "shower_min_liters": "Min. woda w 3 min",
+          "shower_min_drop": "Min. spadek CWU w 3 min"
+        }
       }
     },
     "abort": {
@@ -20,6 +30,9 @@
       },
       "schedule_enabled": {
         "name": "Harmonogram dzień/noc"
+      },
+      "shower_enabled": {
+        "name": "Prysznic - auto boost"
       }
     },
     "number": {
@@ -31,6 +44,9 @@
       },
       "boost_minutes": {
         "name": "Czas boostu z przycisku"
+      },
+      "shower_after_minutes": {
+        "name": "Prysznic - wietrzenie po"
       }
     },
     "time": {
@@ -61,6 +77,11 @@
       },
       "resume": {
         "name": "Powrót do automatyki"
+      }
+    },
+    "binary_sensor": {
+      "shower": {
+        "name": "Prysznic"
       }
     }
   },
@@ -94,6 +115,20 @@
         "source": {
           "name": "Źródło",
           "description": ""
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Prysznic",
+        "description": "Czujniki wykrywania prysznica (przepływ wody + spadek temp. CWU w 3 min). Puste = moduł wyłączony.",
+        "data": {
+          "water_entity": "Licznik wody",
+          "cwu_entity": "Temperatura CWU (dół zasobnika)",
+          "shower_min_liters": "Min. woda w 3 min",
+          "shower_min_drop": "Min. spadek CWU w 3 min"
         }
       }
     }

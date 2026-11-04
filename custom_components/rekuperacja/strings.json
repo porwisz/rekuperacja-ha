@@ -7,6 +7,16 @@
         "data": {
           "fan_entity": "Fan"
         }
+      },
+      "modules": {
+        "title": "Shower",
+        "description": "Shower detection sensors (water flow + DHW temperature drop within 3 min). Empty = module off.",
+        "data": {
+          "water_entity": "Water meter",
+          "cwu_entity": "DHW temperature (tank bottom)",
+          "shower_min_liters": "Min. water in 3 min",
+          "shower_min_drop": "Min. DHW drop in 3 min"
+        }
       }
     },
     "abort": {
@@ -20,6 +30,9 @@
       },
       "schedule_enabled": {
         "name": "Day/night schedule"
+      },
+      "shower_enabled": {
+        "name": "Shower auto boost"
       }
     },
     "number": {
@@ -31,6 +44,9 @@
       },
       "boost_minutes": {
         "name": "Boost button time"
+      },
+      "shower_after_minutes": {
+        "name": "Shower - airing after"
       }
     },
     "time": {
@@ -61,6 +77,11 @@
       },
       "resume": {
         "name": "Resume automation"
+      }
+    },
+    "binary_sensor": {
+      "shower": {
+        "name": "Shower"
       }
     }
   },
@@ -94,6 +115,20 @@
         "source": {
           "name": "Source",
           "description": ""
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Shower",
+        "description": "Shower detection sensors (water flow + DHW temperature drop within 3 min). Empty = module off.",
+        "data": {
+          "water_entity": "Water meter",
+          "cwu_entity": "DHW temperature (tank bottom)",
+          "shower_min_liters": "Min. water in 3 min",
+          "shower_min_drop": "Min. DHW drop in 3 min"
         }
       }
     }

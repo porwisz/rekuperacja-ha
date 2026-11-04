@@ -49,3 +49,27 @@ def test_schedule_over_midnight():
     s = dict(DEFAULT_SETTINGS, weekday_day_start=time(20, 0), weekday_night_start=time(2, 0))
     assert is_day(NOW.replace(hour=1), s)
     assert not is_day(NOW.replace(hour=12), s)
+
+
+def test_shower_detector():
+    from custom_components.rekuperacja.core.shower import ShowerDetector
+
+    d = ShowerDetector()
+    t0 = NOW
+    for i in range(7):  # 8 l/min, CWU spada 0.5 °C/min
+        t = t0 + timedelta(minutes=i * 0.5)
+        d.add_water_liters(t, 1000 + i * 4)
+        d.add_cwu(t, 49.5 - i * 0.5)
+    assert d.detected(t0 + timedelta(minutes=3))
+    assert not d.detected(t0 + timedelta(minutes=10))  # okno wygasło
+
+
+def test_tap_not_shower():
+    from custom_components.rekuperacja.core.shower import ShowerDetector
+
+    d = ShowerDetector()
+    for i in range(7):
+        t = NOW + timedelta(minutes=i * 0.5)
+        d.add_water_liters(t, 1000 + i * 2)  # 12 l / 3 min
+        d.add_cwu(t, 49.5 - i * 0.5)
+    assert not d.detected(NOW + timedelta(minutes=3))

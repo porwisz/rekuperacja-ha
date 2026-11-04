@@ -10,7 +10,7 @@ request:
         number:
           min: 0
           max: 100
-          step: 20
+          step: 5
           unit_of_measurement: "%"
     preset:
       selector:

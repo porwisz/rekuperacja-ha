@@ -7,7 +7,7 @@ from .entity import RekuperacjaEntity
 
 # klucz: (min, max, krok, jednostka)
 NUMBERS = {
-    "day_percentage": (20, 100, 20, PERCENTAGE),  # firmware: 5 biegów co 20%
+    "day_percentage": (5, 100, 5, PERCENTAGE),  # firmware: 20 biegów co 5%
     "manual_minutes": (5, 480, 5, UnitOfTime.MINUTES),
     "boost_minutes": (5, 180, 5, UnitOfTime.MINUTES),
     "shower_after_minutes": (0, 120, 5, UnitOfTime.MINUTES),

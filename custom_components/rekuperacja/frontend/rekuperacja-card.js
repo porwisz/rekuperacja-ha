@@ -67,7 +67,7 @@ class RekuperacjaCard extends HTMLElement {
   static getStubConfig() { return {}; }
 
   _render() {
-    if (!this.shadowRoot) return;
+    if (!this.shadowRoot || this._dragging) return;
     const st = this._state;
     const c = this._config || {};
     let body;
@@ -129,7 +129,7 @@ class RekuperacjaCard extends HTMLElement {
         </div>
         <div class="row2">
           <span>Wydajność w dzień</span>
-          <span class="steps"><button class="step ${st.settings.day_auto ? "on" : ""}" data-day="auto" title="Centrala sama dobiera wydajność">Auto</button>${[20, 40, 60, 80, 100].map((p) => `<button class="step ${!st.settings.day_auto && p === st.settings.day_percentage ? "on" : ""}" data-day="${p}">${p}</button>`).join("")}</span>
+          <span class="steps"><button class="step ${st.settings.day_auto ? "on" : ""}" data-day="auto" title="Centrala sama dobiera wydajność">Auto</button><span class="pct ${st.settings.day_auto ? "dim" : ""}"><input type="range" min="5" max="100" step="5" value="${st.settings.day_percentage}" data-dayslider><b>${st.settings.day_percentage}%</b></span></span>
         </div>
         <div class="hint">${sc.is_day ? "Noc (Sen)" : "Dzień"} od ${hhmm(sc.next_switch)}.</div>
       </div>`;
@@ -171,6 +171,15 @@ class RekuperacjaCard extends HTMLElement {
       await this._ws({ type: "rekuperacja/set_setting", key: "day_percentage", value: Number(b.dataset.day) });
       this._ws({ type: "rekuperacja/set_setting", key: "day_auto", value: false });
     }));
+    const sl = r.querySelector("[data-dayslider]");
+    if (sl) {
+      sl.addEventListener("input", () => { sl.nextElementSibling.textContent = `${sl.value}%`; this._dragging = true; });
+      sl.addEventListener("change", async () => {
+        this._dragging = false;
+        await this._ws({ type: "rekuperacja/set_setting", key: "day_percentage", value: Number(sl.value) });
+        this._ws({ type: "rekuperacja/set_setting", key: "day_auto", value: false });
+      });
+    }
     const res = r.querySelector("[data-resume]");
     if (res) res.addEventListener("click", () => this._ws({ type: "rekuperacja/action", action: "resume" }));
   }
@@ -220,6 +229,8 @@ button:disabled { opacity: .4; cursor: default; }
 .row2 { display: flex; justify-content: space-between; align-items: center; font-size: 13px; gap: 8px; }
 .steps { display: flex; gap: 4px; }
 .step { padding: 4px 8px; border-radius: 8px; background: var(--secondary-background-color); font-size: 12px; }
+.pct { display: flex; align-items: center; gap: 6px; } .pct.dim { opacity: .5; }
+.pct input { width: 120px; accent-color: var(--primary-color); } .pct b { width: 38px; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
 .step.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
 .tg { width: 40px; height: 22px; border-radius: 11px; background: var(--disabled-color, #9e9e9e); position: relative; flex: none; }
 .tg i { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }

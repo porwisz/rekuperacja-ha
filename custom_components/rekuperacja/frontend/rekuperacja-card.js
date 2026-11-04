@@ -131,7 +131,12 @@ class RekuperacjaCard extends HTMLElement {
           <span>Wydajność w dzień</span>
           <span class="steps"><button class="step ${st.settings.day_auto ? "on" : ""}" data-day="auto" title="Centrala sama dobiera wydajność">Auto</button><span class="pct ${st.settings.day_auto ? "dim" : ""}"><input type="range" min="5" max="100" step="5" value="${st.settings.day_percentage}" data-dayslider><b>${st.settings.day_percentage}%</b></span></span>
         </div>
-        <div class="hint">${sc.is_day ? "Noc (Sen)" : "Dzień"} od ${hhmm(sc.next_switch)}.</div>
+        <div class="times">
+          <span></span><span class="th">Dzień od</span><span class="th">Sen od</span>
+          <span>Pn–pt</span>${this._time("weekday_day_start", st)}${this._time("weekday_night_start", st)}
+          <span>Weekend</span>${this._time("weekend_day_start", st)}${this._time("weekend_night_start", st)}
+        </div>
+        <div class="hint">${sc.is_day ? "Sen" : "Dzień"} od ${hhmm(sc.next_switch)}.</div>
       </div>`;
 
     return `
@@ -149,6 +154,10 @@ class RekuperacjaCard extends HTMLElement {
       <div class="sec"><div class="sh"><ha-icon icon="mdi:format-list-bulleted"></ha-icon><span>Żądania</span><span class="hint">wygrywa najwyższe</span></div>${reqs || '<div class="hint">brak</div>'}</div>
       ${shower}${schedule}
       ${this._error ? `<div class="err">${esc(this._error)}</div>` : ""}`;
+  }
+
+  _time(key, st) {
+    return `<input type="time" step="300" value="${st.times[key]}" data-time="${key}">`;
   }
 
   _toggle(key, on) {
@@ -180,6 +189,13 @@ class RekuperacjaCard extends HTMLElement {
         this._ws({ type: "rekuperacja/set_setting", key: "day_auto", value: false });
       });
     }
+    r.querySelectorAll("[data-time]").forEach((i) => {
+      i.addEventListener("focus", () => { this._dragging = true; });
+      i.addEventListener("blur", () => { this._dragging = false; });
+      i.addEventListener("change", () => {
+        if (i.value) this._ws({ type: "rekuperacja/set_setting", key: i.dataset.time, value: i.value });
+      });
+    });
     const res = r.querySelector("[data-resume]");
     if (res) res.addEventListener("click", () => this._ws({ type: "rekuperacja/action", action: "resume" }));
   }
@@ -231,6 +247,9 @@ button:disabled { opacity: .4; cursor: default; }
 .step { padding: 4px 8px; border-radius: 8px; background: var(--secondary-background-color); font-size: 12px; }
 .pct { display: flex; align-items: center; gap: 6px; } .pct.dim { opacity: .5; }
 .pct input { width: 120px; accent-color: var(--primary-color); } .pct b { width: 38px; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+.times { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px 10px; align-items: center; font-size: 13px; }
+.times .th { font-size: 12px; color: var(--secondary-text-color); }
+.times input { font: inherit; color: inherit; background: var(--secondary-background-color); border: none; border-radius: 8px; padding: 4px 8px; min-width: 0; }
 .step.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
 .tg { width: 40px; height: 22px; border-radius: 11px; background: var(--disabled-color, #9e9e9e); position: relative; flex: none; }
 .tg i { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import time
+
 import voluptuous as vol
 
 from homeassistant.components import websocket_api
@@ -15,6 +17,7 @@ from .core.arbiter import Command
 from .core.schedule import is_day, next_switch
 
 # ustawienia, które karta może zmieniać (bool / int)
+TIMES = {"weekday_day_start", "weekday_night_start", "weekend_day_start", "weekend_night_start"}
 EDITABLE = {"automation", "schedule_enabled", "day_auto", "shower_enabled", "day_percentage",
             "boost_minutes", "manual_minutes", "shower_after_minutes"}
 
@@ -45,6 +48,7 @@ def snapshot(c) -> dict:
             "preset": (fan.attributes.get("preset_mode") or None) if fan else None,
         },
         "settings": {k: v for k, v in c.settings.items() if k in EDITABLE},
+        "times": {k: c.settings[k].strftime("%H:%M") for k in TIMES},
         "winner": {"source": w.source, "command": w.command.describe(), "until": _iso(w.until)} if w else None,
         "requests": sorted(
             (
@@ -103,13 +107,19 @@ async def ws_subscribe(hass, connection, msg):
 
 
 @websocket_api.websocket_command(
-    {vol.Required("type"): f"{DOMAIN}/set_setting", vol.Required("key"): vol.In(EDITABLE), vol.Required("value"): vol.Any(bool, int, float)}
+    {vol.Required("type"): f"{DOMAIN}/set_setting", vol.Required("key"): vol.In(EDITABLE | TIMES), vol.Required("value"): vol.Any(bool, int, float, str)}
 )
 @websocket_api.async_response
 async def ws_set_setting(hass, connection, msg):
     c = _coordinator(hass)
     value = msg["value"]
-    if not isinstance(DEFAULT_SETTINGS[msg["key"]], bool):
+    if msg["key"] in TIMES:
+        try:
+            value = time.fromisoformat(str(value))
+        except ValueError:
+            connection.send_error(msg["id"], "invalid_format", "Godzina w formacie HH:MM")
+            return
+    elif not isinstance(DEFAULT_SETTINGS[msg["key"]], bool):
         value = int(value)
     await c.async_set_setting(msg["key"], value)
     connection.send_result(msg["id"])

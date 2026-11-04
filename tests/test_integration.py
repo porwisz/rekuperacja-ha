@@ -160,3 +160,15 @@ async def test_auto_speed_change_is_not_manual(hass, freezer):
     hass.states.async_set(FAN, "on", {"percentage": 60, "preset_mode": "Auto"})  # centrala sama zmienia bieg
     await hass.async_block_till_done()
     assert hass.states.get("sensor.rekuperacja_active_request").state == "harmonogram"
+
+
+async def test_ws_set_time(hass, hass_ws_client):
+    await _setup(hass, None)
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "rekuperacja/set_setting", "key": "weekday_night_start", "value": "21:45"})
+    assert (await ws.receive_json())["success"]
+    from datetime import time as t
+    entry = hass.config_entries.async_entries("rekuperacja")[0]
+    assert entry.runtime_data.settings["weekday_night_start"] == t(21, 45)
+    await ws.send_json({"id": 2, "type": "rekuperacja/set_setting", "key": "weekday_night_start", "value": "zle"})
+    assert not (await ws.receive_json())["success"]

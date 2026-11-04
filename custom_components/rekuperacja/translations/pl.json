@@ -1,0 +1,101 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Rekuperacja",
+        "description": "Wybierz encję wentylatora rekuperatora (ESPHome).",
+        "data": {
+          "fan_entity": "Wentylator"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Integracja jest już skonfigurowana."
+    }
+  },
+  "entity": {
+    "switch": {
+      "automation": {
+        "name": "Automatyka"
+      },
+      "schedule_enabled": {
+        "name": "Harmonogram dzień/noc"
+      }
+    },
+    "number": {
+      "day_percentage": {
+        "name": "Wydajność w dzień"
+      },
+      "manual_minutes": {
+        "name": "Czas ręcznego nadpisania"
+      },
+      "boost_minutes": {
+        "name": "Czas boostu z przycisku"
+      }
+    },
+    "time": {
+      "weekday_day_start": {
+        "name": "Dzień od (pn-pt)"
+      },
+      "weekday_night_start": {
+        "name": "Noc od (pn-pt)"
+      },
+      "weekend_day_start": {
+        "name": "Dzień od (weekend)"
+      },
+      "weekend_night_start": {
+        "name": "Noc od (weekend)"
+      }
+    },
+    "sensor": {
+      "active_source": {
+        "name": "Aktywne żądanie"
+      },
+      "target": {
+        "name": "Docelowe ustawienie"
+      }
+    },
+    "button": {
+      "boost": {
+        "name": "Boost"
+      },
+      "resume": {
+        "name": "Powrót do automatyki"
+      }
+    }
+  },
+  "services": {
+    "request": {
+      "name": "Żądanie wietrzenia",
+      "description": "Zgłasza żądanie; wygrywa najwyższa wydajność.",
+      "fields": {
+        "source": {
+          "name": "Źródło",
+          "description": "Nazwa żądania, np. kuchnia."
+        },
+        "percentage": {
+          "name": "Wydajność",
+          "description": "0-100%."
+        },
+        "preset": {
+          "name": "Preset",
+          "description": "Zamiast wydajności."
+        },
+        "minutes": {
+          "name": "Minuty",
+          "description": "Brak = do odwołania."
+        }
+      }
+    },
+    "cancel": {
+      "name": "Odwołaj żądanie",
+      "description": "Usuwa żądanie o danym źródle.",
+      "fields": {
+        "source": {
+          "name": "Źródło",
+          "description": ""
+        }
+      }
+    }
+  }
+}

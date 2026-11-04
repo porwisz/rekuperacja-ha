@@ -1,0 +1,14 @@
+{
+  "domain": "rekuperacja",
+  "name": "Rekuperacja",
+  "after_dependencies": ["esphome"],
+  "codeowners": ["@porwisz"],
+  "config_flow": true,
+  "documentation": "https://github.com/porwisz/rekuperacja-ha",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/porwisz/rekuperacja-ha/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}

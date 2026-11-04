@@ -1,0 +1,30 @@
+request:
+  fields:
+    source:
+      required: true
+      example: kuchnia
+      selector:
+        text:
+    percentage:
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 20
+          unit_of_measurement: "%"
+    preset:
+      selector:
+        select:
+          options: [Auto, Boost, Sen, Kominek]
+    minutes:
+      selector:
+        number:
+          min: 0
+          max: 1440
+          unit_of_measurement: min
+cancel:
+  fields:
+    source:
+      required: true
+      selector:
+        text:

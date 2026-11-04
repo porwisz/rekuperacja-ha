@@ -1,0 +1,101 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Rekuperacja",
+        "description": "Pick the recuperator fan entity (ESPHome).",
+        "data": {
+          "fan_entity": "Fan"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Already configured."
+    }
+  },
+  "entity": {
+    "switch": {
+      "automation": {
+        "name": "Automation"
+      },
+      "schedule_enabled": {
+        "name": "Day/night schedule"
+      }
+    },
+    "number": {
+      "day_percentage": {
+        "name": "Daytime speed"
+      },
+      "manual_minutes": {
+        "name": "Manual override time"
+      },
+      "boost_minutes": {
+        "name": "Boost button time"
+      }
+    },
+    "time": {
+      "weekday_day_start": {
+        "name": "Day from (Mon-Fri)"
+      },
+      "weekday_night_start": {
+        "name": "Night from (Mon-Fri)"
+      },
+      "weekend_day_start": {
+        "name": "Day from (weekend)"
+      },
+      "weekend_night_start": {
+        "name": "Night from (weekend)"
+      }
+    },
+    "sensor": {
+      "active_source": {
+        "name": "Active request"
+      },
+      "target": {
+        "name": "Target setting"
+      }
+    },
+    "button": {
+      "boost": {
+        "name": "Boost"
+      },
+      "resume": {
+        "name": "Resume automation"
+      }
+    }
+  },
+  "services": {
+    "request": {
+      "name": "Ventilation request",
+      "description": "Adds a request; highest speed wins.",
+      "fields": {
+        "source": {
+          "name": "Source",
+          "description": "Request name."
+        },
+        "percentage": {
+          "name": "Speed",
+          "description": "0-100%."
+        },
+        "preset": {
+          "name": "Preset",
+          "description": "Instead of speed."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "Empty = until cancelled."
+        }
+      }
+    },
+    "cancel": {
+      "name": "Cancel request",
+      "description": "Removes the request.",
+      "fields": {
+        "source": {
+          "name": "Source",
+          "description": ""
+        }
+      }
+    }
+  }
+}

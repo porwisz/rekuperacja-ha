@@ -19,7 +19,8 @@ from .core.schedule import is_day, next_switch
 # ustawienia, które karta może zmieniać (bool / int)
 TIMES = {"weekday_day_start", "weekday_night_start", "weekend_day_start", "weekend_night_start"}
 EDITABLE = {"automation", "schedule_enabled", "day_auto", "shower_enabled", "day_percentage",
-            "boost_minutes", "manual_minutes", "shower_after_minutes"}
+            "boost_minutes", "manual_minutes", "shower_after_minutes",
+            "airing_morning", "airing_evening", "airing_minutes", "airing_percentage"}
 
 
 def _coordinator(hass: HomeAssistant):

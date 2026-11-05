@@ -2,7 +2,7 @@ from datetime import datetime, time, timedelta
 
 from custom_components.rekuperacja.const import DEFAULT_SETTINGS
 from custom_components.rekuperacja.core.arbiter import Command, Request, resolve
-from custom_components.rekuperacja.core.schedule import is_day
+from custom_components.rekuperacja.core.schedule import airing_window, is_day
 
 NOW = datetime(2026, 11, 4, 12, 0)  # środa
 
@@ -82,3 +82,22 @@ def test_next_switch():
     assert next_switch(NOW.replace(hour=23), DEFAULT_SETTINGS) == datetime(2026, 11, 5, 6, 0)
     fri = datetime(2026, 11, 6, 23, 0)
     assert next_switch(fri, DEFAULT_SETTINGS) == datetime(2026, 11, 7, 8, 0)
+
+
+def test_airing_morning_and_evening():
+    s = dict(DEFAULT_SETTINGS)  # pn-pt: dzień 6:00, sen 22:30, 30 min
+    assert airing_window(NOW.replace(hour=6, minute=10), s) == ("rano", NOW.replace(hour=6, minute=30))
+    assert airing_window(NOW.replace(hour=6, minute=30), s) is None
+    assert airing_window(NOW.replace(hour=22, minute=5), s) == ("wieczor", NOW.replace(hour=22, minute=30))
+    assert airing_window(NOW.replace(hour=22, minute=30), s) is None
+    assert airing_window(NOW, s) is None
+    sat = datetime(2026, 11, 7, 8, 15)  # weekend: dzień 8:00
+    assert airing_window(sat, s)[0] == "rano"
+    assert airing_window(sat.replace(hour=6, minute=15), s) is None
+
+
+def test_airing_switches_and_midnight():
+    s = dict(DEFAULT_SETTINGS, airing_morning=False)
+    assert airing_window(NOW.replace(hour=6, minute=10), s) is None
+    s = dict(DEFAULT_SETTINGS, weekday_night_start=time(0, 15))
+    assert airing_window(NOW.replace(hour=23, minute=50), s) == ("wieczor", datetime(2026, 11, 5, 0, 15))

@@ -10,6 +10,8 @@ SWITCHES = {
     "schedule_enabled": EntityCategory.CONFIG,
     "day_auto": EntityCategory.CONFIG,
     "shower_enabled": EntityCategory.CONFIG,
+    "airing_morning": EntityCategory.CONFIG,
+    "airing_evening": EntityCategory.CONFIG,
 }
 
 

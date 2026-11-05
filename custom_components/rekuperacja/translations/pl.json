@@ -36,6 +36,12 @@
       },
       "day_auto": {
         "name": "Dzień w trybie Auto"
+      },
+      "airing_morning": {
+        "name": "Przewietrzanie rano (po pobudce)"
+      },
+      "airing_evening": {
+        "name": "Przewietrzanie wieczorem (przed snem)"
       }
     },
     "number": {
@@ -50,6 +56,12 @@
       },
       "shower_after_minutes": {
         "name": "Prysznic - wietrzenie po"
+      },
+      "airing_minutes": {
+        "name": "Czas przewietrzania"
+      },
+      "airing_percentage": {
+        "name": "Wydajność przewietrzania"
       }
     },
     "time": {

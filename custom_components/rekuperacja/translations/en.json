@@ -36,6 +36,12 @@
       },
       "day_auto": {
         "name": "Day in Auto mode"
+      },
+      "airing_morning": {
+        "name": "Morning airing (after wake-up)"
+      },
+      "airing_evening": {
+        "name": "Evening airing (before sleep)"
       }
     },
     "number": {
@@ -50,6 +56,12 @@
       },
       "shower_after_minutes": {
         "name": "Shower - airing after"
+      },
+      "airing_minutes": {
+        "name": "Airing time"
+      },
+      "airing_percentage": {
+        "name": "Airing speed"
       }
     },
     "time": {

@@ -27,6 +27,8 @@ SOURCE_MANUAL = "reczne"
 SOURCE_SCHEDULE = "harmonogram"
 SOURCE_BOOST_BUTTON = "przycisk_boost"
 SOURCE_SHOWER = "prysznic"
+SOURCE_AIRING_MORNING = "przewietrzanie_rano"
+SOURCE_AIRING_EVENING = "przewietrzanie_wieczor"
 
 DEFAULT_SETTINGS: dict = {
     "automation": True,
@@ -36,6 +38,11 @@ DEFAULT_SETTINGS: dict = {
     "manual_minutes": 60,
     "boost_minutes": 30,
     "shower_enabled": True,
+    # przewietrzanie: N min po pobudce (początek dnia) i N min przed snem (początek nocy)
+    "airing_morning": True,
+    "airing_evening": True,
+    "airing_minutes": 30,
+    "airing_percentage": 80,
     "shower_after_minutes": 20,
     "weekday_day_start": time(6, 0),
     "weekday_night_start": time(22, 30),

@@ -30,3 +30,28 @@ def next_switch(now: datetime, settings: dict) -> datetime:
             if cand > now and (best is None or cand < best):
                 best = cand
     return best
+
+
+def airing_window(now: datetime, settings: dict) -> tuple[str, datetime] | None:
+    """Aktywne przewietrzanie: ("rano" | "wieczor", koniec okna) albo None.
+
+    Rano: `airing_minutes` od początku dnia; wieczór: `airing_minutes` przed początkiem nocy.
+    Godziny brane z harmonogramu snu (osobno pn–pt i weekend).
+    """
+    from datetime import timedelta
+
+    length = timedelta(minutes=int(settings["airing_minutes"]))
+    if length <= timedelta(0):
+        return None
+    for d in (-1, 0, 1):  # okna mogą przechodzić przez północ
+        day = (now + timedelta(days=d)).date()
+        prefix = "weekend" if day.weekday() >= 5 else "weekday"
+        if settings["airing_morning"]:
+            start = datetime.combine(day, settings[f"{prefix}_day_start"], tzinfo=now.tzinfo)
+            if start <= now < start + length:
+                return "rano", start + length
+        if settings["airing_evening"]:
+            end = datetime.combine(day, settings[f"{prefix}_night_start"], tzinfo=now.tzinfo)
+            if end - length <= now < end:
+                return "wieczor", end
+    return None

@@ -22,6 +22,8 @@ from .const import (
     RESEND_INTERVAL_S,
     SIGNAL_UPDATE,
     SLEEP_LEVEL,
+    SOURCE_AIRING_EVENING,
+    SOURCE_AIRING_MORNING,
     SOURCE_BOOST_BUTTON,
     SOURCE_MANUAL,
     SOURCE_SCHEDULE,
@@ -30,7 +32,7 @@ from .const import (
     STORAGE_VERSION,
 )
 from .core.arbiter import Command, Request, resolve
-from .core.schedule import is_day
+from .core.schedule import airing_window, is_day
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -164,6 +166,12 @@ class RekuperacjaCoordinator:
                 out.append(Request(SOURCE_SCHEDULE, pct, Command(percentage=pct)))
             else:
                 out.append(Request(SOURCE_SCHEDULE, SLEEP_LEVEL, Command(preset=PRESET_SLEEP)))
+        window = airing_window(dt_util.as_local(now), self.settings)
+        if window:
+            kind, until = window
+            pct = int(self.settings["airing_percentage"])
+            source = SOURCE_AIRING_MORNING if kind == "rano" else SOURCE_AIRING_EVENING
+            out.append(Request(source, pct, Command(percentage=pct), dt_util.as_utc(until)))
         out.extend(r for r in self.timed.values() if r.active(now))
         return out
 

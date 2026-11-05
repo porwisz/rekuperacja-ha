@@ -2,6 +2,8 @@
 const SOURCES = {
   harmonogram: { name: "Harmonogram", icon: "mdi:calendar-clock" },
   prysznic: { name: "Prysznic", icon: "mdi:shower-head" },
+  przewietrzanie_rano: { name: "Przewietrzanie rano", icon: "mdi:weather-sunset-up" },
+  przewietrzanie_wieczor: { name: "Przewietrzanie wieczorem", icon: "mdi:weather-sunset-down" },
   przycisk_boost: { name: "Boost", icon: "mdi:fan-plus" },
   reczne: { name: "Ręcznie", icon: "mdi:hand-back-right" },
   panel_wietrz: { name: "Wietrzenie", icon: "mdi:weather-windy" },
@@ -136,7 +138,11 @@ class RekuperacjaCard extends HTMLElement {
           <span>Pn–pt</span>${this._time("weekday_day_start", st)}${this._time("weekday_night_start", st)}
           <span>Weekend</span>${this._time("weekend_day_start", st)}${this._time("weekend_night_start", st)}
         </div>
-        <div class="hint">${sc.is_day ? "Sen" : "Dzień"} od ${hhmm(sc.next_switch)}.</div>
+        <div class="row2">
+          <span>Przewietrzanie ${st.settings.airing_percentage}% · ${st.settings.airing_minutes} min</span>
+          <span class="steps"><span>rano</span>${this._toggle("airing_morning", st.settings.airing_morning)}<span>wieczorem</span>${this._toggle("airing_evening", st.settings.airing_evening)}</span>
+        </div>
+        <div class="hint">${sc.is_day ? "Sen" : "Dzień"} od ${hhmm(sc.next_switch)}. Przewietrzanie: po pobudce i przed snem.</div>
       </div>`;
 
     return `

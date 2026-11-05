@@ -11,6 +11,8 @@ NUMBERS = {
     "manual_minutes": (5, 480, 5, UnitOfTime.MINUTES),
     "boost_minutes": (5, 180, 5, UnitOfTime.MINUTES),
     "shower_after_minutes": (0, 120, 5, UnitOfTime.MINUTES),
+    "airing_minutes": (5, 120, 5, UnitOfTime.MINUTES),
+    "airing_percentage": (5, 100, 5, PERCENTAGE),
 }
 
 
